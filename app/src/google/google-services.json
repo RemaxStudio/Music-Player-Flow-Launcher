@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "102568716153",
+    "project_id": "aga515c06bab-18239-gp",
+    "storage_bucket": "aga515c06bab-18239-gp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102568716153:android:03f33d2a755e082d9031a8",
+        "android_client_info": {
+          "package_name": "com.online.music.audio.stream.songs.player"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJBpqhtltySm33Kml8jG7bB7HnZ49kxpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
