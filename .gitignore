@@ -18,6 +18,4 @@ local.properties
 /build.config.properties
 /.novi-sdk/
 
-# Google Firebase settings and upload keys are supplied outside Git.
-/app/src/google/google-services.json
-/app/src/google/google-release.keystore
+# Google 渠道的 google-services.json、上传密钥和签名信息都提交到仓库，不在此忽略。

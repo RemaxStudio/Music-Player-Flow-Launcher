@@ -1,6 +1,7 @@
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -88,12 +89,26 @@ val analyticsConfig = extraMap("analytics")
 val legalConfig = extraMap("legal")
 
 val resolvedVersionName = appConfig.stringValue("versionName", "1.0.0")
+// CI 首次打包时生成上传密钥，并把别名和密码写入此文件一起提交；ANDROID_SIGNING_* 仍可覆盖。
+val googleReleaseSigningPropertiesFile = file("src/google/google-release-signing.properties")
+val googleReleaseSigningProperties = Properties().apply {
+    if (googleReleaseSigningPropertiesFile.isFile) {
+        googleReleaseSigningPropertiesFile.inputStream().use(::load)
+    }
+}
+
+fun googleSigningValue(envName: String, propertyName: String): String =
+    secretValue(envName).ifEmpty { googleReleaseSigningProperties.getProperty(propertyName)?.trim().orEmpty() }
+
 val googleReleaseKeystoreFile = secretValue("ANDROID_SIGNING_STORE_FILE")
     .takeIf { it.isNotEmpty() }
     ?.let(::resolveSigningFile)
-val googleReleaseStorePassword = secretValue("ANDROID_SIGNING_STORE_PASSWORD")
-val googleReleaseKeyAlias = secretValue("ANDROID_SIGNING_KEY_ALIAS")
-val googleReleaseKeyPassword = secretValue("ANDROID_SIGNING_KEY_PASSWORD")
+    ?: googleReleaseSigningProperties.getProperty("storeFile")?.trim()
+        ?.takeIf { it.isNotEmpty() }
+        ?.let { googleReleaseSigningPropertiesFile.parentFile.resolve(it) }
+val googleReleaseStorePassword = googleSigningValue("ANDROID_SIGNING_STORE_PASSWORD", "storePassword")
+val googleReleaseKeyAlias = googleSigningValue("ANDROID_SIGNING_KEY_ALIAS", "keyAlias")
+val googleReleaseKeyPassword = googleSigningValue("ANDROID_SIGNING_KEY_PASSWORD", "keyPassword")
 val hasGoogleReleaseSigning = googleReleaseKeystoreFile?.let { it.isFile && it.length() > 0L } == true &&
     googleReleaseStorePassword.isNotEmpty() &&
     googleReleaseKeyAlias.isNotEmpty() &&
@@ -206,7 +221,8 @@ android {
             }
             if (requiresGoogleReleaseSigning && !hasGoogleReleaseSigning) {
                 throw GradleException(
-                    "Missing Google release signing config. Set " +
+                    "Missing Google release signing config. Pull app/src/google/google-release.keystore and " +
+                        "google-release-signing.properties from main (the CI workflow creates them), or set " +
                         "ANDROID_SIGNING_STORE_FILE, ANDROID_SIGNING_STORE_PASSWORD, ANDROID_SIGNING_KEY_ALIAS, " +
                         "and ANDROID_SIGNING_KEY_PASSWORD."
                 )
