@@ -55,7 +55,8 @@ ext {
            minSdk       : 26,
            targetSdk    : 37,
            versionCode  : 1,
-           versionName  : "1.0.0"]
+           versionName  : "1.0.0",
+           feedbackEmail: "fajr.appco@gmail.com"]
 
     // 设置页法律链接集中配置，业务层不会硬编码站点地址。
     legal = [privacyPolicyUrl : "https://pperteam.com/privacy.html",
