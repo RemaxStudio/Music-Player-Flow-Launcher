@@ -115,6 +115,29 @@ jobs:
           git commit -m "chore: add google release keystore"
           git push origin HEAD:main
 
+      # google-services.json 不进仓库（.gitignore），每次打包从 Secret 写回；
+      # 更换 Firebase 项目时只需更新 GOOGLE_SERVICES_JSON，无需改代码。
+      - name: Write google-services.json from secret
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLE_SERVICES_PATH: app/src/google/google-services.json
+        run: |
+          set -euo pipefail
+
+          if [ -s "$GOOGLE_SERVICES_PATH" ]; then
+            echo "Using existing $GOOGLE_SERVICES_PATH"
+          elif [ -n "${GOOGLE_SERVICES_JSON:-}" ]; then
+            mkdir -p "$(dirname "$GOOGLE_SERVICES_PATH")"
+            printf '%s' "$GOOGLE_SERVICES_JSON" > "$GOOGLE_SERVICES_PATH"
+          else
+            echo "Missing $GOOGLE_SERVICES_PATH." >&2
+            echo "Configure repository secret GOOGLE_SERVICES_JSON with the google flavor Firebase config." >&2
+            exit 1
+          fi
+
+          PACKAGE_NAME="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["client"][0]["client_info"]["android_client_info"]["package_name"])' "$GOOGLE_SERVICES_PATH")"
+          echo "google-services.json package_name: $PACKAGE_NAME"
+
       - name: Grant Gradle wrapper permission
         run: chmod +x ./gradlew
 
