@@ -2,6 +2,7 @@ package com.amberwave.player.feature.settings
 
 import android.os.Looper
 import android.util.Log
+import android.util.Patterns
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.amberwave.player.BuildConfig
@@ -11,6 +12,8 @@ class LocaleSettingsRepository : AppSettingsRepository {
     override val supportedLanguages: List<AppLanguage> = AppLanguage.entries
     override val privacyPolicyUrl: String? = BuildConfig.PRIVACY_POLICY_URL.validHttpsUrlOrNull()
     override val termsOfServiceUrl: String? = BuildConfig.TERMS_OF_SERVICE_URL.validHttpsUrlOrNull()
+    override val feedbackEmail: String? =
+        BuildConfig.FEEDBACK_EMAIL.trim().takeIf { Patterns.EMAIL_ADDRESS.matcher(it).matches() }
 
     override fun currentLanguage(): AppLanguage {
         val explicitTag = runCatching {

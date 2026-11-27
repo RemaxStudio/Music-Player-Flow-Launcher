@@ -88,17 +88,13 @@ val analyticsConfig = extraMap("analytics")
 val legalConfig = extraMap("legal")
 
 val resolvedVersionName = appConfig.stringValue("versionName", "1.0.0")
-val googleReleaseKeystorePath = secretValue("ANDROID_SIGNING_STORE_FILE")
-val googleReleaseKeystoreFile = if (googleReleaseKeystorePath.isNotEmpty()) {
-    resolveSigningFile(googleReleaseKeystorePath)
-} else {
-    file("src/google/google-release.keystore")
-}
-val googleReleaseStorePassword = secretValue("ANDROID_SIGNING_STORE_PASSWORD").ifEmpty { "google123456" }
-val googleReleaseKeyAlias = secretValue("ANDROID_SIGNING_KEY_ALIAS").ifEmpty { "google" }
-val googleReleaseKeyPassword = secretValue("ANDROID_SIGNING_KEY_PASSWORD").ifEmpty { "google123456" }
-val hasGoogleReleaseSigning = googleReleaseKeystoreFile.isFile &&
-    googleReleaseKeystoreFile.length() > 0L &&
+val googleReleaseKeystoreFile = secretValue("ANDROID_SIGNING_STORE_FILE")
+    .takeIf { it.isNotEmpty() }
+    ?.let(::resolveSigningFile)
+val googleReleaseStorePassword = secretValue("ANDROID_SIGNING_STORE_PASSWORD")
+val googleReleaseKeyAlias = secretValue("ANDROID_SIGNING_KEY_ALIAS")
+val googleReleaseKeyPassword = secretValue("ANDROID_SIGNING_KEY_PASSWORD")
+val hasGoogleReleaseSigning = googleReleaseKeystoreFile?.let { it.isFile && it.length() > 0L } == true &&
     googleReleaseStorePassword.isNotEmpty() &&
     googleReleaseKeyAlias.isNotEmpty() &&
     googleReleaseKeyPassword.isNotEmpty()
@@ -127,7 +123,12 @@ val releaseDefaultProguardFile = if (releaseMinifyEnabled && releaseOptimizeEnab
     "proguard-android.txt"
 }
 val fallbackApplicationId = appConfig.stringValue("applicationId", "com.example.lcb.app")
-val googleApplicationId = googleServicesPackageName("google") ?: fallbackApplicationId
+// Explicit Google builds use the configured release ID, so stale Firebase config fails client matching.
+val googleApplicationId = if (rootProject.extra["useGoogleChannelConfig"] == true) {
+    fallbackApplicationId
+} else {
+    googleServicesPackageName("google") ?: fallbackApplicationId
+}
 val localApplicationId = googleServicesPackageName("local") ?: fallbackApplicationId
 
 android {
@@ -158,6 +159,7 @@ android {
         )
         buildConfigField("String", "PRIVACY_POLICY_URL", buildConfigString(legalConfig.stringValue("privacyPolicyUrl")))
         buildConfigField("String", "TERMS_OF_SERVICE_URL", buildConfigString(legalConfig.stringValue("termsOfServiceUrl")))
+        buildConfigField("String", "FEEDBACK_EMAIL", buildConfigString(appConfig.stringValue("feedbackEmail")))
 
     }
 
@@ -204,7 +206,7 @@ android {
             }
             if (requiresGoogleReleaseSigning && !hasGoogleReleaseSigning) {
                 throw GradleException(
-                    "Missing google release signing config. Ensure app/src/google/google-release.keystore exists or set " +
+                    "Missing Google release signing config. Set " +
                         "ANDROID_SIGNING_STORE_FILE, ANDROID_SIGNING_STORE_PASSWORD, ANDROID_SIGNING_KEY_ALIAS, " +
                         "and ANDROID_SIGNING_KEY_PASSWORD."
                 )

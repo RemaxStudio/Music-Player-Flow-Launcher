@@ -9,10 +9,6 @@ plugins {
     alias(libs.plugins.google.firebase.crashlytics) apply false
 }
 
-val taskNames = gradle.startParameter.taskNames
-val configFile = when {
-    taskNames.any { it.lowercase().contains("google") } -> file("scripts/official.gradle")
-    taskNames.any { it.lowercase().contains("local") } -> file("scripts/internal.gradle")
-    else -> file("scripts/internal.gradle")
-}
-apply(from = configFile)
+val useGoogleChannelConfig = gradle.startParameter.taskNames.any { it.contains("google", ignoreCase = true) }
+extra["useGoogleChannelConfig"] = useGoogleChannelConfig
+apply(from = if (useGoogleChannelConfig) "scripts/official.gradle" else "scripts/internal.gradle")

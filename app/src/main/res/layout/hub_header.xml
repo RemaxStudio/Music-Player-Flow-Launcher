@@ -11,10 +11,15 @@
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:accessibilityHeading="true"
+        android:autoSizeMaxTextSize="31sp"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:ellipsize="end"
+        android:gravity="start|center_vertical"
         android:maxLines="1"
         android:text="@string/home_brand"
         android:textAppearance="@style/TextAppearance.LocalPure.Wordmark" />

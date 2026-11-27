@@ -12,4 +12,6 @@
   <string name="settings_link_open_failed">Không có trình duyệt để mở liên kết này</string>
   <string name="action_back">Quay lại</string>
   <string name="settings_language_system_default">Theo ngôn ngữ hệ thống</string>
+  <string name="settings_send_feedback">Gửi phản hồi</string>
+  <string name="settings_feedback_open_failed">Không có ứng dụng email. Vui lòng liên hệ %1$s.</string>
 </resources>

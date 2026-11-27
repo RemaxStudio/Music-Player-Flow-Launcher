@@ -49,7 +49,7 @@
         android:maxLines="3"
         android:paddingHorizontal="12dp"
         android:textAppearance="@style/TextAppearance.LocalPure.Body.Medium"
-        tools:text="Allow LocalPure to find and play audio files stored on this device." />
+        tools:text="@string/local_music_permission_message" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/action"

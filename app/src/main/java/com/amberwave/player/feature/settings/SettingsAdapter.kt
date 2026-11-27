@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.amberwave.player.databinding.SettingsRowBinding
 
-internal enum class SettingsAction { LANGUAGE, PRIVACY_POLICY, TERMS_OF_SERVICE }
+internal enum class SettingsAction { LANGUAGE, PRIVACY_POLICY, TERMS_OF_SERVICE, SEND_FEEDBACK }
 
 internal data class SettingsRow(
     val action: SettingsAction,
@@ -19,7 +19,7 @@ internal data class SettingsRow(
     val trailingText: String? = null,
 )
 
-/** 三个设置项仍通过 Diff 更新，语言重建前后的值变化不会触发整卡刷新。 */
+/** 设置项通过 Diff 更新，语言重建前后的值变化不会触发整卡刷新。 */
 internal class SettingsAdapter(
     private val onClick: (SettingsAction) -> Unit,
 ) : ListAdapter<SettingsRow, SettingsAdapter.Holder>(Diff) {

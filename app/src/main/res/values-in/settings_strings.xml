@@ -12,4 +12,6 @@
   <string name="settings_link_open_failed">Tidak ada browser untuk membuka tautan ini</string>
   <string name="action_back">Kembali</string>
   <string name="settings_language_system_default">Ikuti bahasa sistem</string>
+  <string name="settings_send_feedback">Kirim masukan</string>
+  <string name="settings_feedback_open_failed">Tidak ada aplikasi email. Hubungi %1$s.</string>
 </resources>

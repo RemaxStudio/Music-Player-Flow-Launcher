@@ -12,4 +12,6 @@
   <string name="settings_link_open_failed">No hay ningún navegador disponible para abrir este enlace</string>
   <string name="action_back">Atrás</string>
   <string name="settings_language_system_default">Seguir el idioma del sistema</string>
+  <string name="settings_send_feedback">Enviar comentarios</string>
+  <string name="settings_feedback_open_failed">No hay una aplicación de correo disponible. Contacta con %1$s.</string>
 </resources>

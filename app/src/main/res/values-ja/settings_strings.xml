@@ -12,4 +12,6 @@
   <string name="settings_link_open_failed">このリンクを開けるブラウザがありません</string>
   <string name="action_back">戻る</string>
   <string name="settings_language_system_default">システム設定に従う</string>
+  <string name="settings_send_feedback">フィードバックを送信</string>
+  <string name="settings_feedback_open_failed">メールアプリが見つかりません。%1$s にご連絡ください。</string>
 </resources>

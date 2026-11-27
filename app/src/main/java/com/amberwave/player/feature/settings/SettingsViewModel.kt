@@ -12,6 +12,7 @@ data class SettingsUiState(
     val currentLanguage: AppLanguage,
     val privacyPolicyUrl: String?,
     val termsOfServiceUrl: String?,
+    val feedbackEmail: String?,
 )
 
 /** 设置页保持单向数据流；Activity 只发送事件并渲染不可变状态。 */
@@ -41,6 +42,7 @@ class SettingsViewModel(
         currentLanguage = currentLanguage(),
         privacyPolicyUrl = privacyPolicyUrl,
         termsOfServiceUrl = termsOfServiceUrl,
+        feedbackEmail = feedbackEmail,
     )
 
     class Factory(private val repository: AppSettingsRepository) : ViewModelProvider.Factory {

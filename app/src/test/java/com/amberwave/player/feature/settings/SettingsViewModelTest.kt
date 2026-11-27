@@ -74,6 +74,7 @@ class SettingsViewModelTest {
         override val supportedLanguages = AppLanguage.entries
         override val privacyPolicyUrl: String? = "https://example.com/privacy"
         override val termsOfServiceUrl: String? = "https://example.com/terms"
+        override val feedbackEmail: String? = null
         var current: AppLanguage = AppLanguage.SYSTEM_DEFAULT
 
         override fun currentLanguage() = current

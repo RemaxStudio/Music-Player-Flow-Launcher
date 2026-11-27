@@ -5,6 +5,7 @@ interface AppSettingsRepository {
     val supportedLanguages: List<AppLanguage>
     val privacyPolicyUrl: String?
     val termsOfServiceUrl: String?
+    val feedbackEmail: String?
 
     fun currentLanguage(): AppLanguage
 

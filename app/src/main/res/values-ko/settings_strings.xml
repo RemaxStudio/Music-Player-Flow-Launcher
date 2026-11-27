@@ -12,4 +12,6 @@
   <string name="settings_link_open_failed">이 링크를 열 수 있는 브라우저가 없습니다</string>
   <string name="action_back">뒤로</string>
   <string name="settings_language_system_default">시스템 언어 따르기</string>
+  <string name="settings_send_feedback">의견 보내기</string>
+  <string name="settings_feedback_open_failed">이메일 앱이 없습니다. %1$s에 문의하세요.</string>
 </resources>

@@ -2,6 +2,7 @@ package com.amberwave.player.feature.settings
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.net.toUri
@@ -74,16 +75,27 @@ class SettingsFragment : ViewBindingFragment<FragmentSettingsBinding>(FragmentSe
 
     private fun render(state: SettingsUiState) {
         settingsAdapter.submitList(
-            listOf(
-                SettingsRow(
-                    SettingsAction.LANGUAGE,
-                    R.string.settings_language,
-                    R.drawable.ic_pref_language,
-                    getString(state.currentLanguage.displayNameRes),
-                ),
-                SettingsRow(SettingsAction.PRIVACY_POLICY, R.string.settings_privacy_policy, R.drawable.ic_pref_privacy),
-                SettingsRow(SettingsAction.TERMS_OF_SERVICE, R.string.settings_terms_of_service, R.drawable.ic_pref_terms),
-            ),
+            buildList {
+                add(
+                    SettingsRow(
+                        SettingsAction.LANGUAGE,
+                        R.string.settings_language,
+                        R.drawable.ic_pref_language,
+                        getString(state.currentLanguage.displayNameRes),
+                    ),
+                )
+                add(SettingsRow(SettingsAction.PRIVACY_POLICY, R.string.settings_privacy_policy, R.drawable.ic_pref_privacy))
+                add(SettingsRow(SettingsAction.TERMS_OF_SERVICE, R.string.settings_terms_of_service, R.drawable.ic_pref_terms))
+                if (state.feedbackEmail != null) {
+                    add(
+                        SettingsRow(
+                            SettingsAction.SEND_FEEDBACK,
+                            R.string.settings_send_feedback,
+                            R.drawable.ic_pref_feedback,
+                        ),
+                    )
+                }
+            },
         )
     }
 
@@ -105,6 +117,7 @@ class SettingsFragment : ViewBindingFragment<FragmentSettingsBinding>(FragmentSe
                 openSecurePage(state.privacyPolicyUrl, EventTracker.SettingsAction.OPEN_PRIVACY_POLICY)
             SettingsAction.TERMS_OF_SERVICE ->
                 openSecurePage(state.termsOfServiceUrl, EventTracker.SettingsAction.OPEN_TERMS_OF_SERVICE)
+            SettingsAction.SEND_FEEDBACK -> state.feedbackEmail?.let(::openFeedbackEmail)
         }
     }
 
@@ -114,17 +127,26 @@ class SettingsFragment : ViewBindingFragment<FragmentSettingsBinding>(FragmentSe
             toast(R.string.settings_link_unavailable)
             return
         }
-        val opened = try {
-            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).addCategory(Intent.CATEGORY_BROWSABLE))
+        val opened = tryOpen(Intent(Intent.ACTION_VIEW, url.toUri()).addCategory(Intent.CATEGORY_BROWSABLE))
+        EventTracker.settings(analyticsAction, if (opened) EventTracker.Outcome.SUCCESS else EventTracker.Outcome.FAILURE)
+        if (!opened) toast(R.string.settings_link_open_failed)
+    }
+
+    private fun openFeedbackEmail(email: String) {
+        val recipient = Uri.encode(email, "@")
+        val intent = Intent(Intent.ACTION_SENDTO, "mailto:$recipient".toUri())
+        if (!tryOpen(intent)) toast(getString(R.string.settings_feedback_open_failed, email))
+    }
+
+    private fun tryOpen(intent: Intent): Boolean =
+        try {
+            startActivity(intent)
             true
         } catch (_: ActivityNotFoundException) {
             false
         } catch (_: SecurityException) {
             false
         }
-        EventTracker.settings(analyticsAction, if (opened) EventTracker.Outcome.SUCCESS else EventTracker.Outcome.FAILURE)
-        if (!opened) toast(R.string.settings_link_open_failed)
-    }
 
     private companion object {
         const val TAG = "SettingsFragment"
